@@ -1,33 +1,33 @@
 const express = require('express');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const dotenv = require('dotenv');
 
 dotenv.config();
-connectDB();
-
 const app = express();
-              app.use(cors({ 
-  origin: [
-    'http://localhost:5173',
-    'https://taskmaster-xi-ochre.vercel.app',
-    'https://taskmaster-knlmvh91-margam-sruthis-projects.vercel.app'
-  ], 
- credentials: true }));
+
+// ===== CORS FIX - IDI FIRST PETTU =====
+app.use(cors({
+  origin: 'https://taskmaster-xi-ochre.vercel.app',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Preflight handle cheyyi - IMPORTANT
+app.options('*', cors());
+
 app.use(express.json());
+// ===== CORS AIPOINDI =====
 
-// Mount routers
+// Nee routes ikkada
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
-app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: err.message || 'Server Error' });
-});
+// MongoDB connect
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));

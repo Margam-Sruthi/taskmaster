@@ -7,8 +7,15 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+              app.use(cors({ 
+  origin: [
+    'http://localhost:5173',
+    'https://taskmaster-eight-pi.vercel.app',
+    'https://taskmaster-knlmvh91-margam-sruthis-projects.vercel.app'
+  ], 
+  credentials: true 
+}));
+              , credentials: true }));
 app.use(express.json());
 
 // Mount routers

@@ -13,9 +13,7 @@ const app = express();
     'https://taskmaster-eight-pi.vercel.app',
     'https://taskmaster-knlmvh91-margam-sruthis-projects.vercel.app'
   ], 
-  credentials: true 
-}));
-              , credentials: true }));
+ credentials: true }));
 app.use(express.json());
 
 // Mount routers

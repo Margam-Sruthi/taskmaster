@@ -1,12 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
+require('dotenv').config();
 
-dotenv.config();
 const app = express();
 
-// ===== CORS FIX - IDI FIRST PETTU =====
+// CORS FIX - FINAL
 app.use(cors({
   origin: 'https://taskmaster-xi-ochre.vercel.app',
   credentials: true,
@@ -14,17 +13,20 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Preflight handle cheyyi - IMPORTANT
-app.options('*', cors());
+// app.options('*', cors()); ← IDI DELETE CHEY
 
 app.use(express.json());
-// ===== CORS AIPOINDI =====
 
-// Nee routes ikkada
+// Test route
+app.get('/', (req, res) => {
+  res.send('Backend Working!');
+});
+
+// Nee routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 
-// MongoDB connect
+// MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));

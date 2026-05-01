@@ -1,14 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 
-// CORS - BULLET PROOF VERSION ✅
-// MUNDUGA IDI PETTU. ROUTES KANTE MUNDU.
+// CORS - DYNAMIC & ENVIRONMENT BASED
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'https://taskmaster-xi-ochre.vercel.app'
+].filter(Boolean);
+
 const corsOptions = {
-  origin: 'https://taskmaster-xi-ochre.vercel.app',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -21,14 +27,23 @@ app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Backend Working! CORS Fixed!');
+// Health check route
+app.get('/api/status', (req, res) => {
+  res.send('Backend Working & Ready for Production!');
 });
 
 // Nee routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
+
+// SERVE FRONTEND IN PRODUCTION
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
 
 // MongoDB
 mongoose.connect(process.env.MONGO_URI)

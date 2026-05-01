@@ -20,6 +20,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://taskmaster-xi-ochre.vercel.app', // Added common Vercel URL seen earlier
 ].filter(Boolean);
 
 const corsOptions = {
@@ -47,6 +48,11 @@ app.get('/api/status', (req, res) => {
     environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString()
   });
+});
+
+// Root route to prevent "Cannot GET /"
+app.get('/', (req, res) => {
+  res.send('Taskmaster API is running. Use /api/status for more info.');
 });
 
 // API Routes

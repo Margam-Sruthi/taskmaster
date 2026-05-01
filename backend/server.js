@@ -69,11 +69,34 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// MongoDB Connection
+// MongoDB Connection & Seeding
+const User = require('./models/User');
+
+const seedAdmin = async () => {
+  try {
+    const adminExists = await User.findOne({ role: 'Admin' });
+    if (!adminExists) {
+      console.log('🌱 Seeding default admin user...');
+      await User.create({
+        name: 'Default Admin',
+        email: 'admin@taskmaster.com',
+        password: 'admin123',
+        role: 'Admin'
+      });
+      console.log('✅ Default admin created: admin@taskmaster.com / admin123');
+    }
+  } catch (error) {
+    console.error('❌ Seeding Error:', error.message);
+  }
+};
+
 console.log("ENV CHECK (MONGO_URI exists):", !!process.env.MONGO_URI); 
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
+  .then(() => {
+    console.log('✅ MongoDB Connected');
+    seedAdmin();
+  })
   .catch(err => {
     console.error('❌ MongoDB Connection Error:', err.message);
     // Removed process.exit(1) to keep the server alive for debugging
